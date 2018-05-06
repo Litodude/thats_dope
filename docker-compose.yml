@@ -1,0 +1,32 @@
+db:
+  image: mongo:3.0
+  volumes:
+    - ./data/runtime/db:/data/db
+    - ./data/dump:/dump
+  command: mongod --smallfiles
+
+rocketchat:
+  image: rocketchat/rocket.chat:latest
+  environment:
+    - MONGO_URL=mongodb://db:27017/rocketchat
+    - ROOT_URL=https://ec2-18-188-189-221.us-east-2.compute.amazonaws.com
+  links:
+    - db:db
+  ports:
+    - 3000:3000
+
+hubot:
+  image: rocketchat/hubot-rocketchat:v0.1.4
+  environment:
+    - ROCKETCHAT_URL=18.188.189.221:3000
+    - ROCKETCHAT_ROOM=HackHealth_Vegas
+    - ROCKETCHAT_USER=Litodude
+    - ROCKETCHAT_PASSWORD=lito
+    - BOT_NAME=Administrator
+    - EXTERNAL_SCRIPTS=hubot-help,hubot-seen,hubot-links,hubot-greetings
+  links:
+    - rocketchat:rocketchat
+ this is used to expose the hubot port for notifications on the host on port 30$
+  ports:
+    - 3001:8080
+
